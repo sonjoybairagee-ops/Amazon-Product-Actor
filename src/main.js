@@ -55,8 +55,8 @@ const crawler = new PlaywrightCrawler({
         useFingerprints: true,
     },
     maxConcurrency: 2,
-    requestHandlerTimeoutSecs: 120,
-    maxRequestRetries: 3,
+    requestHandlerTimeoutSecs: 180,
+    maxRequestRetries: 5,
 
     async requestHandler({ page, request, session }) {
         const { type, sourceLabel, marketplace: mkt } = request.userData;
@@ -75,7 +75,7 @@ const crawler = new PlaywrightCrawler({
         try {
             await page.goto(request.url, {
                 waitUntil: 'domcontentloaded',
-                timeout: 60000,
+                timeout: 120000, // ✅ 60000 থেকে 120000 করা হয়েছে
             });
         } catch (e) {
             log.warning(`Navigation issue: ${e.message}`);
@@ -133,12 +133,12 @@ const crawler = new PlaywrightCrawler({
                 const reviewsUrl = getReviewsUrl(request.url);
                 if (reviewsUrl) {
                     try {
-                        await page.goto(reviewsUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
+                        await page.goto(reviewsUrl, { waitUntil: 'domcontentloaded', timeout: 90000 }); // ✅ 45000 থেকে 90000
                         await page.waitForSelector('[data-hook="review"]', { timeout: 10000 }).catch(() => {});
                         reviews = await extractReviews(page, maxReviews);
                         log.info(`  Reviews: ${reviews.length}`);
                         // Go back to product page for Q&A
-                        await page.goto(request.url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+                        await page.goto(request.url, { waitUntil: 'domcontentloaded', timeout: 90000 }); // ✅ 45000 থেকে 90000
                     } catch (e) {
                         log.warning(`Reviews scrape failed: ${e.message}`);
                     }
@@ -151,7 +151,7 @@ const crawler = new PlaywrightCrawler({
                 const qaUrl = getQAUrl(request.url);
                 if (qaUrl) {
                     try {
-                        await page.goto(qaUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
+                        await page.goto(qaUrl, { waitUntil: 'domcontentloaded', timeout: 90000 }); // ✅ 45000 থেকে 90000
                         await page.waitForSelector('.askTeaserQuestions, #ask-btf-container', { timeout: 10000 }).catch(() => {});
                         qa = await extractQA(page);
                         log.info(`  Q&A: ${qa.length}`);
