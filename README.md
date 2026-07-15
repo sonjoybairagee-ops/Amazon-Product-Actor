@@ -23,7 +23,6 @@
 ## 📞 Support
 
 If you encounter any issues, have feature requests, or need a custom scraping solution, please:
-- [Open an issue on GitHub](YOUR_GITHUB_REPO_LINK) 
-- Or contact the developer at: **your.email@example.com**
+- contact the developer at: **sonjoy.bairagee@gmail.com**
 
 *I regularly update this Actor to keep up with Amazon's layout changes.*
