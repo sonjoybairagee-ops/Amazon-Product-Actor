@@ -6,36 +6,45 @@
     "productUrls": {
       "title": "Product URLs",
       "type": "array",
-      "description": "List of Amazon product URLs to scrape (any marketplace)",
+      "description": "List of Amazon product URLs to scrape (any marketplace).",
       "editor": "stringList",
       "prefill": ["https://www.amazon.com/dp/B08N5WRWNW"]
     },
     "asins": {
       "title": "ASINs",
       "type": "array",
-      "description": "List of Amazon ASINs to scrape",
+      "description": "List of Amazon ASINs to scrape (e.g., B08N5WRWNW).",
       "editor": "stringList",
       "prefill": []
     },
     "searchQueries": {
       "title": "Search Queries",
       "type": "array",
-      "description": "Search keywords to find products on Amazon",
+      "description": "Search keywords to find products on Amazon.",
       "editor": "stringList",
       "prefill": []
     },
     "marketplace": {
       "title": "Marketplace",
       "type": "string",
-      "description": "Amazon marketplace to use for ASIN/search lookups",
+      "description": "Amazon marketplace to use for ASIN/search lookups.",
       "editor": "select",
-      "enum": ["amazon.com", "amazon.co.uk", "amazon.de", "amazon.in", "amazon.ca", "amazon.fr", "amazon.it", "amazon.es"],
+      "enum": [
+        "amazon.com",
+        "amazon.co.uk",
+        "amazon.de",
+        "amazon.in",
+        "amazon.ca",
+        "amazon.fr",
+        "amazon.it",
+        "amazon.es"
+      ],
       "default": "amazon.com"
     },
     "maxProductsPerSearch": {
       "title": "Max Products Per Search",
       "type": "integer",
-      "description": "Maximum number of products to scrape per search query",
+      "description": "Maximum number of products to scrape per search query.",
       "default": 20,
       "minimum": 1,
       "maximum": 100
@@ -43,13 +52,13 @@
     "scrapeReviews": {
       "title": "Scrape Reviews",
       "type": "boolean",
-      "description": "Extract customer reviews (top reviews)",
+      "description": "Extract customer reviews for each product.",
       "default": true
     },
     "maxReviews": {
       "title": "Max Reviews Per Product",
       "type": "integer",
-      "description": "Maximum number of reviews to extract per product",
+      "description": "Maximum number of reviews to extract per product.",
       "default": 10,
       "minimum": 1,
       "maximum": 50
@@ -57,21 +66,24 @@
     "scrapeQA": {
       "title": "Scrape Q&A",
       "type": "boolean",
-      "description": "Extract customer questions and answers",
+      "description": "Extract customer questions and answers.",
       "default": true
     },
     "scrapeSimilarProducts": {
       "title": "Scrape Similar Products",
       "type": "boolean",
-      "description": "Extract similar/related product listings",
+      "description": "Extract similar/related product listings.",
       "default": true
     },
     "proxyConfiguration": {
       "title": "Proxy Configuration",
       "type": "object",
-      "description": "Proxy settings (recommended for Amazon)",
+      "description": "⚠️ Highly Recommended: Use RESIDENTIAL proxies to avoid Amazon CAPTCHA blocks.",
       "editor": "proxy",
-      "prefill": { "useApifyProxy": true }
+      "prefill": {
+        "useApifyProxy": true,
+        "apifyProxyGroups": ["RESIDENTIAL"]
+      }
     }
   },
   "required": []
