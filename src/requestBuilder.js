@@ -1,3 +1,8 @@
+/**
+ * Amazon Request Builder
+ * Constructs robust URLs for Products, Reviews, QA, and Search across multiple marketplaces.
+ */
+
 const MARKETPLACE_DOMAINS = {
     'amazon.com': 'https://www.amazon.com',
     'amazon.co.uk': 'https://www.amazon.co.uk',
@@ -7,46 +12,76 @@ const MARKETPLACE_DOMAINS = {
     'amazon.fr': 'https://www.amazon.fr',
     'amazon.it': 'https://www.amazon.it',
     'amazon.es': 'https://www.amazon.es',
+    'amazon.com.au': 'https://www.amazon.com.au',
+    'amazon.co.jp': 'https://www.amazon.co.jp',
+    'amazon.com.mx': 'https://www.amazon.com.mx',
 };
+
+// Helper to safely extract origin (e.g., "https://www.amazon.co.uk") from any URL
+function getOriginFromUrl(url) {
+    try {
+        const parsed = new URL(url);
+        return parsed.origin;
+    } catch (e) {
+        return 'https://www.amazon.com'; // Fallback
+    }
+}
+
+// Helper to extract ASIN from any Amazon URL
+function extractAsin(url) {
+    const match = url.match(/\/(?:dp|gp\/product|product)\/([A-Z0-9]{10})/i);
+    return match ? match[1].toUpperCase() : null;
+}
 
 export function buildRequests({ productUrls, asins, searchQueries, marketplace }) {
     const requests = [];
     const baseUrl = MARKETPLACE_DOMAINS[marketplace] || 'https://www.amazon.com';
 
-    // Direct product URLs
+    // 1. Direct product URLs
     for (const url of (productUrls || [])) {
         const cleanUrl = url.trim();
         if (!cleanUrl) continue;
-        // Detect marketplace from URL
-        const domainMatch = cleanUrl.match(/amazon\.(com|co\.uk|de|in|ca|fr|it|es)/);
+        
+        // Dynamically detect marketplace from the URL itself (overrides default marketplace)
+        const detectedOrigin = getOriginFromUrl(cleanUrl);
+        const detectedMarketplace = Object.keys(MARKETPLACE_DOMAINS).find(key => 
+            MARKETPLACE_DOMAINS[key] === detectedOrigin
+        ) || marketplace;
+
         requests.push({
             url: cleanUrl,
             userData: {
                 type: 'PRODUCT',
                 sourceLabel: `url:${cleanUrl}`,
-                marketplace: domainMatch ? `amazon.${domainMatch[1]}` : marketplace,
+                marketplace: detectedMarketplace,
+                asin: extractAsin(cleanUrl),
             },
+            uniqueKey: `product_${extractAsin(cleanUrl) || cleanUrl}`, // Prevents duplicate crawling
         });
     }
 
-    // ASINs → product URLs
+    // 2. ASINs → Convert to product URLs
     for (const asin of (asins || [])) {
         const cleanAsin = asin.trim().toUpperCase();
-        if (!cleanAsin) continue;
+        if (!cleanAsin || cleanAsin.length !== 10) continue; // Basic ASIN validation
+        
         requests.push({
             url: `${baseUrl}/dp/${cleanAsin}`,
             userData: {
                 type: 'PRODUCT',
                 sourceLabel: `asin:${cleanAsin}`,
                 marketplace,
+                asin: cleanAsin,
             },
+            uniqueKey: `product_${cleanAsin}`,
         });
     }
 
-    // Search queries
+    // 3. Search queries
     for (const query of (searchQueries || [])) {
         const cleanQuery = query.trim();
         if (!cleanQuery) continue;
+        
         const encoded = encodeURIComponent(cleanQuery);
         requests.push({
             url: `${baseUrl}/s?k=${encoded}`,
@@ -56,6 +91,7 @@ export function buildRequests({ productUrls, asins, searchQueries, marketplace }
                 marketplace,
                 query: cleanQuery,
             },
+            uniqueKey: `search_${cleanQuery}_${marketplace}`,
         });
     }
 
@@ -63,18 +99,18 @@ export function buildRequests({ productUrls, asins, searchQueries, marketplace }
 }
 
 export function getReviewsUrl(productUrl) {
-    // Convert product URL to reviews URL
-    const asinMatch = productUrl.match(/\/dp\/([A-Z0-9]{10})/);
-    if (!asinMatch) return null;
-    const domainMatch = productUrl.match(/(amazon\.[a-z.]+)\//);
-    const domain = domainMatch ? `https://www.${domainMatch[1]}` : 'https://www.amazon.com';
-    return `${domain}/product-reviews/${asinMatch[1]}?sortBy=recent&pageNumber=1`;
+    const asin = extractAsin(productUrl);
+    if (!asin) return null;
+    
+    const origin = getOriginFromUrl(productUrl);
+    // sortBy=recent ensures we get the latest reviews, pageNumber=1 for the first batch
+    return `${origin}/product-reviews/${asin}?sortBy=recent&pageNumber=1`;
 }
 
 export function getQAUrl(productUrl) {
-    const asinMatch = productUrl.match(/\/dp\/([A-Z0-9]{10})/);
-    if (!asinMatch) return null;
-    const domainMatch = productUrl.match(/(amazon\.[a-z.]+)\//);
-    const domain = domainMatch ? `https://www.${domainMatch[1]}` : 'https://www.amazon.com';
-    return `${domain}/ask/questions/asin/${asinMatch[1]}/`;
+    const asin = extractAsin(productUrl);
+    if (!asin) return null;
+    
+    const origin = getOriginFromUrl(productUrl);
+    return `${origin}/ask/questions/asin/${asin}/`;
 }
