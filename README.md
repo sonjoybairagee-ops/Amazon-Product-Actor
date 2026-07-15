@@ -1,166 +1,29 @@
-# 🛒 Amazon Product Scraper
-
-Extract detailed product data from Amazon — including prices, ratings, reviews, Q&A, and more — without any coding required.
-
-## 🚀 What Does This Actor Do?
-
-Amazon Product Scraper lets you collect structured data from Amazon product pages at scale. Simply provide product URLs, ASINs, or search queries, and the actor will return clean, ready-to-use data in JSON or CSV format.
+*(Note: Reviews and Q&A are saved as separate dataset rows linked by the `asin` field for better data management.)*
 
 ---
 
-## ✅ What Data You Get
+## ⚠️ Important Notes
 
-| Field | Description |
-|-------|-------------|
-| `title` | Full product title |
-| `price` | Current price |
-| `currency` | Currency code (GBP, USD, EUR…) |
-| `rating` | Average star rating |
-| `reviewCount` | Total number of reviews |
-| `asin` | Amazon Standard ID |
-| `brand` | Product brand |
-| `images` | All product images |
-| `description` | Full product description |
-| `features` | Bullet point features |
-| `reviews` | Top customer reviews |
-| `qa` | Customer Q&A |
-| `similarProducts` | Related products |
-| `availability` | In stock / Out of stock |
-| `url` | Source product URL |
+1. **Proxy is Mandatory for Scale**: Amazon aggressively blocks datacenter IPs. For reliable scraping, always use **Apify Residential Proxies**.
+2. **Rate Limiting**: Keep concurrency low (default is 1). High concurrency will trigger CAPTCHAs.
+3. **Terms of Service**: Scraping Amazon may violate their Terms of Service. Use this tool responsibly, at your own risk, and for lawful purposes only.
 
 ---
 
-## 📥 Input Options
+## 🔧 Troubleshooting
 
-You can provide input in **3 ways**:
-
-### 1. Product URLs
-Paste direct Amazon product links:
-```
-https://www.amazon.com/dp/B08N5WRWNW
-https://www.amazon.co.uk/dp/1405965436
-```
-
-### 2. ASINs
-Just the product ID is enough:
-```
-B08N5WRWNW
-1405965436
-```
-
-### 3. Search Queries
-Search Amazon like a customer:
-```
-wireless earbuds
-gaming laptop under 1000
-```
+| Issue | Solution |
+|-------|----------|
+| **CAPTCHA / Robot Check** | You are being blocked. Enable **Residential Proxies** and reduce concurrency to `1`. |
+| **Empty Results / Missing Data** | Amazon's DOM changes frequently. Check the logs. If persistent, open a GitHub issue. |
+| **Slow Execution** | Scraping reviews and Q&A requires additional page loads. Disable them in Input if you only need basic product data. |
 
 ---
 
-## 🌍 Supported Marketplaces
+## 📞 Support
 
-- 🇺🇸 amazon.com
-- 🇬🇧 amazon.co.uk
-- 🇩🇪 amazon.de
-- 🇫🇷 amazon.fr
-- 🇮🇳 amazon.in
-- 🇨🇦 amazon.ca
-- 🇮🇹 amazon.it
-- 🇪🇸 amazon.es
+If you encounter any issues, have feature requests, or need a custom scraping solution, please:
+- [Open an issue on GitHub](YOUR_GITHUB_REPO_LINK) 
+- Or contact the developer at: **your.email@example.com**
 
----
-
-## ⚙️ Advanced Settings
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `maxProductsPerSearch` | 20 | Max products per search query |
-| `scrapeReviews` | true | Collect customer reviews |
-| `maxReviews` | 10 | Number of reviews per product |
-| `scrapeQA` | true | Collect Q&A section |
-| `scrapeSimilarProducts` | true | Collect related products |
-
----
-
-## 📤 Output Example
-
-```json
-{
-  "title": "One Golden Summer",
-  "asin": "1405965436",
-  "price": 8.99,
-  "currency": "GBP",
-  "rating": 4.6,
-  "reviewCount": 1284,
-  "brand": "Penguin Books",
-  "availability": "In Stock",
-  "images": ["https://..."],
-  "features": ["Bestselling novel", "..."],
-  "reviews": [
-    {
-      "author": "John D.",
-      "rating": 5,
-      "title": "Absolutely loved it",
-      "body": "One of the best books I've read this year..."
-    }
-  ],
-  "qa": [
-    {
-      "question": "Is this a standalone novel?",
-      "answer": "Yes, it can be read independently."
-    }
-  ]
-}
-```
-
----
-
-## 💡 Use Cases
-
-- 📊 **Price Monitoring** — Track price changes daily
-- 🔍 **Competitor Research** — Analyze competitor products
-- 🛍️ **E-commerce** — Build product catalogs
-- 📈 **Market Research** — Discover trends and demand
-- ⭐ **Review Analysis** — Understand customer sentiment
-
----
-
-## ⚡ Getting Started
-
-1. Click **Try for free**
-2. Add your Amazon product URLs or search queries
-3. Click **Start**
-4. Download results as **JSON or CSV**
-
----
-
-## 📊 Performance
-
-- Scrapes **1 product in ~30-60 seconds**
-- Handles **bot detection** automatically
-- Retries failed requests up to **5 times**
-- Supports **proxy rotation** for reliability
-
----
-
-## 🆓 Free to Use
-
-This actor is **completely free** to use. You only pay for the Apify platform usage (compute units).
-
-Typical cost: **~$0.01–0.05 per product**
-
----
-
-## 🛠️ Built With
-
-- [Apify SDK](https://docs.apify.com/sdk/js/)
-- [Crawlee](https://crawlee.dev/)
-- [Playwright](https://playwright.dev/)
-
----
-
-## 📬 Support
-
-Having issues? Found a bug? Please create an issue or contact us through the Apify platform.
-
-We typically respond within **24 hours**.
+*I regularly update this Actor to keep up with Amazon's layout changes.*
