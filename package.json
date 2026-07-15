@@ -2,7 +2,7 @@
   "name": "amazon-scraper-actor",
   "version": "1.0.0",
   "type": "module",
-  "main": "src/main.js",
+  "main": "main.js",
   "dependencies": {
     "apify": "^3.2.2",
     "crawlee": "^3.5.8",
